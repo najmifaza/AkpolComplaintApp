@@ -32,22 +32,19 @@ export default function LoginPage() {
       setError("NRP atau Password salah.");
       setLoading(false);
     } else {
-      // Cek role user dari tabel profiles
       const { data: profile } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", authData.user.id)
         .single();
       
-      // Validasi keamanan: Pastikan tab login sesuai dengan role asli di database
       if (profile?.role !== activeTab) {
-        await supabase.auth.signOut(); // Logout paksa karena mencoba masuk ke pintu yang salah
-        setError(`Akses ditolak! Akun Anda terdaftar sebagai ${profile?.role?.toUpperCase() || 'TIDAK DIKETAHUI'}, bukan ${activeTab.toUpperCase()}. Silakan pindah ke tab yang benar.`);
+        await supabase.auth.signOut();
+        setError(`Akses ditolak! Akun Anda terdaftar sebagai ${profile?.role?.toUpperCase() || 'TIDAK DIKETAHUI'}, bukan ${activeTab.toUpperCase()}.`);
         setLoading(false);
         return;
       }
       
-      // Arahkan ke dashboard masing-masing
       if (profile?.role === "admin") {
         router.push("/admin/dashboard");
       } else if (profile?.role === "teknisi") {
@@ -60,43 +57,35 @@ export default function LoginPage() {
     }
   };
 
-  // Warna dinamis berdasarkan tab yang aktif
+  // Warna dinamis Akpol Theme
   const getThemeColor = () => {
-    if (activeTab === "admin") return "bg-slate-800 hover:bg-slate-900 focus:ring-slate-800 text-white";
-    if (activeTab === "teknisi") return "bg-amber-600 hover:bg-amber-700 focus:ring-amber-500 text-white";
-    return "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 text-white";
-  };
-
-  const getIconColor = () => {
-    if (activeTab === "admin") return "text-slate-800 bg-slate-100";
-    if (activeTab === "teknisi") return "text-amber-600 bg-amber-50";
-    return "text-blue-600 bg-blue-50";
+    if (activeTab === "admin") return "bg-slate-900 hover:bg-black focus:ring-slate-900 text-amber-500 border-2 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)]";
+    if (activeTab === "teknisi") return "bg-amber-500 hover:bg-amber-600 focus:ring-amber-400 text-slate-900 border-2 border-amber-600 shadow-[0_0_15px_rgba(245,158,11,0.4)]";
+    return "bg-[#800000] hover:bg-[#600000] focus:ring-[#800000] text-white border-2 border-[#800000] shadow-[0_0_15px_rgba(128,0,0,0.3)]";
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-100 transition-all duration-300">
-      
-      <div className="flex flex-col items-center mb-6 text-center">
-        <div className={`p-4 rounded-full mb-4 ${getIconColor()} transition-colors`}>
-          {activeTab === "pelapor" && <User className="w-8 h-8" />}
-          {activeTab === "teknisi" && <Wrench className="w-8 h-8" />}
-          {activeTab === "admin" && <ShieldAlert className="w-8 h-8" />}
-        </div>
-        <h1 className="text-2xl font-bold text-slate-800">
-          Login {activeTab === "pelapor" ? "Pelapor" : activeTab === "teknisi" ? "Teknisi" : "Admin"}
+    <div className="bg-white rounded-2xl shadow-2xl p-8 border border-slate-200 transition-all duration-300 relative overflow-hidden">
+      {/* Aksen atas */}
+      <div className={`absolute top-0 left-0 w-full h-2 ${activeTab === 'pelapor' ? 'bg-[#800000]' : activeTab === 'teknisi' ? 'bg-amber-500' : 'bg-slate-900'}`} />
+
+      <div className="flex flex-col items-center mb-6 text-center mt-2">
+        {/* Logo Akpol */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/akpol.png" alt="Logo Akpol" className="h-24 w-auto mb-4 drop-shadow-md" />
+        
+        <h1 className="text-3xl font-black text-slate-800 tracking-tight">
+          DUMAS <span className="text-amber-500">AKPOL</span>
         </h1>
-        <p className="text-slate-500 mt-2 text-sm">
-          {activeTab === "pelapor" && "Masuk untuk melaporkan keluhan infrastruktur."}
-          {activeTab === "teknisi" && "Masuk untuk melihat dan mengeksekusi tugas lapangan."}
-          {activeTab === "admin" && "Masuk ke pusat kendali manajemen pengaduan."}
+        <p className="text-slate-500 mt-2 text-sm font-medium">
+          Layanan Pengaduan Infrastruktur Terintegrasi
         </p>
       </div>
 
-      {/* Tabs Pilihan Role */}
-      <div className="flex bg-slate-100 rounded-lg p-1.5 mb-8">
+      <div className="flex bg-slate-100 rounded-lg p-1.5 mb-8 border border-slate-200">
         <button 
           onClick={() => { setActiveTab("pelapor"); setError(""); }} 
-          className={`flex-1 py-2 text-sm font-bold rounded-md flex justify-center items-center transition-all ${activeTab === 'pelapor' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+          className={`flex-1 py-2 text-sm font-bold rounded-md flex justify-center items-center transition-all ${activeTab === 'pelapor' ? 'bg-white shadow-sm text-[#800000]' : 'text-slate-500 hover:text-slate-700'}`}
         >
           <User className="w-4 h-4 mr-2" /> Pelapor
         </button>
@@ -115,14 +104,14 @@ export default function LoginPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg text-sm mb-6 text-center border border-red-100 font-medium">
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg text-sm mb-6 text-center border border-red-100 font-bold">
           {error}
         </div>
       )}
 
       <form onSubmit={handleLogin} className="space-y-5">
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1">
+          <label className="block text-sm font-bold text-slate-700 mb-1">
             NRP <span className="text-slate-400 font-normal">(Nomor Registrasi Pokok)</span>
           </label>
           <input
@@ -130,17 +119,17 @@ export default function LoginPage() {
             required
             value={nrp}
             onChange={(e) => setNrp(e.target.value)}
-            className={`w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 outline-none transition-all
+            className={`w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 outline-none transition-all font-medium bg-slate-50 focus:bg-white
               ${activeTab === 'admin' ? 'focus:ring-slate-800 focus:border-slate-800' : 
                 activeTab === 'teknisi' ? 'focus:ring-amber-500 focus:border-amber-500' : 
-                'focus:ring-blue-500 focus:border-blue-500'}
+                'focus:ring-[#800000] focus:border-[#800000]'}
             `}
             placeholder={`Masukkan NRP ${activeTab}...`}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1">
+          <label className="block text-sm font-bold text-slate-700 mb-1">
             Password
           </label>
           <input
@@ -148,10 +137,10 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={`w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 outline-none transition-all
+            className={`w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 outline-none transition-all font-medium bg-slate-50 focus:bg-white
               ${activeTab === 'admin' ? 'focus:ring-slate-800 focus:border-slate-800' : 
                 activeTab === 'teknisi' ? 'focus:ring-amber-500 focus:border-amber-500' : 
-                'focus:ring-blue-500 focus:border-blue-500'}
+                'focus:ring-[#800000] focus:border-[#800000]'}
             `}
             placeholder="••••••••"
           />
@@ -160,25 +149,24 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full font-medium py-3 rounded-lg transition-all flex items-center justify-center mt-2 disabled:opacity-70 ${getThemeColor()}`}
+          className={`w-full font-black py-3.5 rounded-lg transition-all flex items-center justify-center mt-4 disabled:opacity-70 tracking-wide uppercase ${getThemeColor()}`}
         >
           {loading ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <>
               <LogIn className="w-5 h-5 mr-2" />
-              Masuk sebagai {activeTab === "pelapor" ? "Pelapor" : activeTab === "teknisi" ? "Teknisi" : "Admin"}
+              LOGIN {activeTab}
             </>
           )}
         </button>
       </form>
 
-      {/* Register link hanya untuk pelapor */}
       {activeTab === "pelapor" && (
-        <div className="mt-8 text-center text-sm text-slate-500 border-t border-slate-100 pt-6">
-          Belum punya akun pelapor?{" "}
-          <Link href="/register" className="text-blue-600 hover:text-blue-700 font-bold">
-            Daftar di sini
+        <div className="mt-8 text-center text-sm text-slate-500 border-t border-slate-200 pt-6">
+          Taruna / Staf baru?{" "}
+          <Link href="/register" className="text-[#800000] hover:text-red-700 font-black tracking-wide">
+            Daftar Akses
           </Link>
         </div>
       )}

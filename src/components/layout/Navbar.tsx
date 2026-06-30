@@ -15,40 +15,42 @@ export default function Navbar({ profile }: { profile: any }) {
   }
 
   return (
-    <nav className="bg-white border-b border-slate-200">
+    <nav className="bg-[#800000] border-b-4 border-amber-500 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between h-20">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/dashboard" className="text-xl font-black tracking-tighter text-blue-800">
-                Lapor<span className="text-amber-500">Akpol</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/akpol.png" alt="Logo Akpol" className="h-12 w-auto mr-3 drop-shadow-md" />
+              <Link href="/dashboard" className="text-2xl font-black tracking-tight text-white uppercase drop-shadow-sm">
+                DUMAS <span className="text-amber-400">AKPOL</span>
               </Link>
             </div>
-            <div className="ml-10 flex space-x-8">
+            <div className="ml-10 flex space-x-2 items-center">
               <Link 
                 href="/dashboard" 
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${pathname === '/dashboard' ? 'border-blue-600 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
+                className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-bold transition-all ${pathname === '/dashboard' ? 'bg-amber-500 text-slate-900 shadow-sm' : 'text-slate-200 hover:bg-[#600000] hover:text-white'}`}
               >
-                Dashboard Saya
+                DASHBOARD SAYA
               </Link>
               <Link 
                 href="/lapor" 
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${pathname === '/lapor' ? 'border-blue-600 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
+                className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-bold transition-all ${pathname === '/lapor' ? 'bg-amber-500 text-slate-900 shadow-sm' : 'text-slate-200 hover:bg-[#600000] hover:text-white'}`}
               >
-                Lapor Baru
+                BUAT LAPORAN
               </Link>
             </div>
           </div>
           <div className="flex items-center">
-            <div className="flex flex-col text-right mr-4">
-              <span className="text-sm font-semibold text-slate-700">{profile?.nama || 'User'}</span>
-              <span className="text-xs text-slate-500">NRP: {profile?.nrp}</span>
+            <div className="flex flex-col text-right mr-4 text-white">
+              <span className="text-sm font-bold drop-shadow-sm">{profile?.nama || 'Taruna/Staf'}</span>
+              <span className="text-[10px] text-amber-300 uppercase tracking-wider font-semibold">NRP: {profile?.nrp}</span>
             </div>
             <button 
               onClick={handleLogout} 
-              className="ml-2 bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded-lg text-sm font-medium transition"
+              className="ml-2 bg-[#600000] text-slate-200 hover:bg-red-950 hover:text-white border border-[#500000] px-4 py-2 rounded-md text-xs font-bold transition-all"
             >
-              Logout
+              LOGOUT
             </button>
           </div>
         </div>
