@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Menu, X } from "lucide-react"
 
-export default function AdminNavbar({ profile }: { profile: any }) {
+export default function AdminNavbar({ profile }: { profile: { nama?: string; nrp?: string; role?: string } }) {
   const router = useRouter()
   const supabase = createClient()
   const [isOpen, setIsOpen] = useState(false)
@@ -21,7 +21,7 @@ export default function AdminNavbar({ profile }: { profile: any }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
+            <div className="shrink-0 flex items-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/akpol.png" alt="Logo Akpol" className="h-10 w-auto sm:h-12 mr-2 sm:mr-3 drop-shadow-md" />
               <Link href="/admin/dashboard" className="text-xl sm:text-2xl font-black tracking-tight text-white uppercase drop-shadow-sm flex items-center">
@@ -63,7 +63,7 @@ export default function AdminNavbar({ profile }: { profile: any }) {
         <div className="md:hidden bg-slate-800 border-t border-slate-700 animate-in slide-in-from-top-2 duration-200">
           <div className="pt-4 pb-4">
             <div className="flex items-center px-5">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="h-10 w-10 rounded-full bg-slate-700 flex items-center justify-center text-amber-400 font-bold border border-slate-600">
                   {profile?.nama?.charAt(0).toUpperCase() || 'A'}
                 </div>

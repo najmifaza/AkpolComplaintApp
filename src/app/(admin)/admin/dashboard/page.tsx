@@ -9,7 +9,7 @@ export default async function AdminDashboard() {
   const supabase = await createClient()
 
   // Ambil semua tiket beserta data nama pelapor melalui Foreign Key (JOIN tabel)
-  const { data: tikets, error } = await supabase
+  const { data: tikets } = await supabase
     .from('tiket')
     .select(`
       *,
@@ -67,7 +67,7 @@ export default async function AdminDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {tikets?.map((tiket: any) => {
+              {tikets?.map((tiket: { id: string; nomor: string; status: string; created_at: string; pelapor?: { nama: string; nrp: string }; judul: string; kategori: string; lokasi: string }) => {
                  const cfg = STATUS_CONFIG[tiket.status] || { label: tiket.status, color: 'gray' };
                  return (
                   <tr key={tiket.id} className="hover:bg-slate-50 transition-colors">
