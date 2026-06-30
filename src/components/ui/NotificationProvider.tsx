@@ -1,82 +1,104 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { X } from "lucide-react";
 
 export default function NotificationProvider({ userId, role }: { userId: string; role: string }) {
   const supabase = createClient();
-  // Untuk memastikan kita tidak meminta izin berulang kali dalam 1 sesi
-  const requestedRef = useRef(false);
+  const [toast, setToast] = useState<{ title: string; message: string; id: number } | null>(null);
 
   useEffect(() => {
-    // 1. Minta Izin Notifikasi ke Browser
+    // 1. Minta izin Notifikasi Sistem (OS) sebagai tambahan
     if (typeof window !== "undefined" && "Notification" in window) {
-      if (Notification.permission === "default" && !requestedRef.current) {
-        requestedRef.current = true;
+      if (Notification.permission === "default") {
         Notification.requestPermission();
       }
     }
 
     if (!userId || !role) return;
 
-    // 2. Berlangganan (Subscribe) ke perubahan database secara Real-Time
-    let channel = supabase.channel(`notif_${role}_${userId}`);
+    let channel = supabase.channel(`notif_channel_${userId}`);
+
+    const showNotification = (title: string, message: string) => {
+      // Tampilkan In-App Toast
+      setToast({ title, message, id: Date.now() });
+
+      // Hilangkan toast setelah 5 detik
+      setTimeout(() => {
+        setToast(null);
+      }, 5000);
+
+      // Tampilkan juga OS Notification jika diizinkan
+      if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+        new Notification(title, { body: message, icon: "/akpol.png" });
+      }
+    };
 
     if (role === "pelapor") {
-      // Pelapor: Pantau jika tiket miliknya di-update statusnya
       channel = channel.on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "tiket", filter: `pelapor_id=eq.${userId}` },
         (payload) => {
-          const tiket = payload.new;
-          if (Notification.permission === "granted") {
-            new Notification("Status Laporan Diperbarui!", {
-              body: `Aduan ${tiket.nomor} Anda kini berstatus: ${tiket.status.toUpperCase()}. Cek di aplikasi.`,
-              icon: "/favicon.ico"
-            });
-          }
+          console.log("REALTIME PELAPOR:", payload);
+          showNotification(
+            "Status Laporan Diperbarui!",
+            `Aduan ${payload.new.nomor} Anda kini berstatus: ${payload.new.status.toUpperCase()}.`
+          );
         }
       );
     } else if (role === "admin") {
-      // Admin: Pantau jika ada tiket baru (INSERT) masuk ke sistem
       channel = channel.on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "tiket" },
         (payload) => {
-          const tiket = payload.new;
-          if (Notification.permission === "granted") {
-            new Notification("🔔 Laporan Baru Masuk!", {
-              body: `Tiket ${tiket.nomor} baru saja dibuat. Segera verifikasi.`,
-              icon: "/favicon.ico"
-            });
-          }
+          console.log("REALTIME ADMIN:", payload);
+          showNotification(
+            "Laporan Baru Masuk!",
+            `Tiket ${payload.new.nomor} baru saja dibuat. Segera verifikasi.`
+          );
         }
       );
     } else if (role === "teknisi") {
-      // Teknisi: Pantau jika ada tiket yang diubah statusnya menjadi "diproses" (oleh admin)
       channel = channel.on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "tiket", filter: "status=eq.diproses" },
         (payload) => {
-          const tiket = payload.new;
-          if (Notification.permission === "granted") {
-            new Notification("🛠️ Tugas Baru Diteruskan", {
-              body: `Tiket ${tiket.nomor} telah diteruskan ke lapangan. Siap dieksekusi!`,
-              icon: "/favicon.ico"
-            });
-          }
+          console.log("REALTIME TEKNISI:", payload);
+          showNotification(
+            "Tugas Baru Diteruskan",
+            `Tiket ${payload.new.nomor} telah diteruskan ke lapangan.`
+          );
         }
       );
     }
 
-    // Aktifkan channel
-    channel.subscribe();
+    channel.subscribe((status) => {
+      console.log(`Supabase Realtime Status (${role}):`, status);
+    });
 
     return () => {
-      // Bersihkan koneksi saat komponen dilepas
       supabase.removeChannel(channel);
     };
   }, [userId, role, supabase]);
 
-  return null; // Komponen ini bekerja di latar belakang (invisible)
+  if (!toast) return null;
+
+  // In-App Toast UI (Pasti Muncul)
+  return (
+    <div className="fixed top-6 right-6 z-[9999] bg-white border-l-4 border-amber-500 shadow-2xl rounded-r-lg rounded-l-sm p-4 w-80 animate-in slide-in-from-right-8 fade-in duration-300">
+      <div className="flex justify-between items-start">
+        <div className="flex flex-col">
+          <h3 className="font-bold text-slate-800 text-sm">{toast.title}</h3>
+          <p className="text-slate-600 text-xs mt-1">{toast.message}</p>
+        </div>
+        <button 
+          onClick={() => setToast(null)}
+          className="text-slate-400 hover:text-slate-600 transition-colors"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
 }
