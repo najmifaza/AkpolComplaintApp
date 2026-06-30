@@ -65,16 +65,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl p-8 border border-slate-200 transition-all duration-300 relative overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border border-slate-200 transition-all duration-300 relative overflow-hidden w-full max-w-md mx-auto">
       {/* Aksen atas */}
       <div className={`absolute top-0 left-0 w-full h-2 ${activeTab === 'pelapor' ? 'bg-[#800000]' : activeTab === 'teknisi' ? 'bg-amber-500' : 'bg-slate-900'}`} />
 
       <div className="flex flex-col items-center mb-6 text-center mt-2">
         {/* Logo Akpol */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/akpol.png" alt="Logo Akpol" className="h-24 w-auto mb-4 drop-shadow-md" />
+        <img src="/akpol.png" alt="Logo Akpol" className="h-20 sm:h-24 w-auto mb-4 drop-shadow-md" />
         
-        <h1 className="text-3xl font-black text-slate-800 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">
           DUMAS <span className="text-amber-500">AKPOL</span>
         </h1>
         <p className="text-slate-500 mt-2 text-sm font-medium">

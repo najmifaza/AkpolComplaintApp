@@ -30,7 +30,7 @@ export default async function AdminDashboard() {
       <h1 className="text-2xl font-bold text-slate-800 mb-6">Overview Pusat</h1>
       
       {/* Bagian Kartu Statistik */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-slate-400">
           <p className="text-slate-500 text-sm font-medium">Tiket Baru Masuk</p>
           <h2 className="text-3xl font-bold text-slate-800 mt-1">{stats.masuk}</h2>

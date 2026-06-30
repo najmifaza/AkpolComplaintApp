@@ -19,12 +19,12 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Tiket Laporan Anda</h1>
-          <p className="text-slate-500 text-sm mt-1">Pantau status laporan infrastruktur yang telah Anda ajukan.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Tiket Laporan Anda</h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-1">Pantau status laporan infrastruktur yang telah Anda ajukan.</p>
         </div>
-        <Link href="/lapor" className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition shadow-sm">
+        <Link href="/lapor" className="w-full sm:w-auto text-center bg-[#800000] hover:bg-[#600000] text-white px-5 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition shadow-sm border border-[#800000]">
           + Buat Laporan Baru
         </Link>
       </div>
@@ -43,9 +43,9 @@ export default async function DashboardPage() {
             
             return (
               <Link href={`/tiket/${tiket.id}`} key={tiket.id} className="block bg-white p-6 rounded-xl border border-slate-200 hover:border-blue-400 hover:shadow-md transition group">
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="font-semibold text-lg text-slate-800 group-hover:text-blue-700 transition">{tiket.judul}</h3>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+                  <h3 className="font-semibold text-base sm:text-lg text-slate-800 group-hover:text-red-800 transition">{tiket.judul}</h3>
+                  <span className={`px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider self-start sm:self-auto ${
                     statusConfig.color === 'gray' ? 'bg-gray-100 text-gray-700' :
                     statusConfig.color === 'blue' ? 'bg-blue-100 text-blue-700' :
                     statusConfig.color === 'amber' ? 'bg-amber-100 text-amber-700' :
