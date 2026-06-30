@@ -161,7 +161,19 @@ create trigger on_auth_user_created
 3. Isi nama bucket dengan: `foto-tiket`.
 4. **JANGAN** centang *"Public bucket"* (biarkan mati) karena akses gambar butuh keamanan ekstra menggunakan sistem *Signed URL*.
 5. Klik **Save**.
-6. *(Penting)*: Di menu **Storage -> Policies**, tambahkan policy pada bucket `foto-tiket` untuk mengizinkan pengguna yang sudah login (Authenticated) untuk melakukan `INSERT` dan `SELECT` foto milik tiket mereka.
+6. *(Penting)*: Untuk mempermudah pembuatan Policy akses foto, Anda tidak perlu menggunakan template UI. Cukup buka menu **SQL Editor** (seperti langkah sebelumnya) dan jalankan script SQL berikut agar user yang login bisa mengunggah dan melihat foto:
+
+```sql
+-- Policy agar user yang login bisa upload (INSERT) ke bucket foto-tiket
+create policy "User login bisa upload foto"
+  on storage.objects for insert
+  with check ( bucket_id = 'foto-tiket' and auth.role() = 'authenticated' );
+
+-- Policy agar user yang login bisa melihat (SELECT) dari bucket foto-tiket
+create policy "User login bisa lihat foto"
+  on storage.objects for select
+  using ( bucket_id = 'foto-tiket' and auth.role() = 'authenticated' );
+```
 
 ## Langkah 6: Mengambil Kredensial API untuk Project Next.js
 1. Buka menu **Project Settings** (ikon gerigi di bagian bawah sidebar kiri).
