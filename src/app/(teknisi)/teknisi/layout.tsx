@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import TeknisiNavbar from "@/components/layout/TeknisiNavbar"
+import NotificationProvider from "@/components/ui/NotificationProvider"
 
 export const dynamic = 'force-dynamic'
 
@@ -24,6 +25,7 @@ export default async function TeknisiLayout({ children }: { children: React.Reac
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
+      <NotificationProvider userId={user.id} role={profile.role} />
       <TeknisiNavbar profile={profile} />
       <main className="flex-1 w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {children}
